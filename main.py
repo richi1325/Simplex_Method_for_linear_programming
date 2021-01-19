@@ -1,4 +1,13 @@
-from modules import Construccion_matrices
+from modules.Construccion_matrices import funcionObjetivo, acomodarRestricciones
+from modules.portada import saludo
+import numpy as np
 
 if __name__ == "__main__":
-    print('BIENVENIDO A ESTE PROGRAMA QUE SOLUCIONA PROBLEMAS DE PROGRAMACIÓN CON EL MÉTODO SIMPLEX REVISADO')
+    saludo()
+    variablesNB,cB = funcionObjetivo()
+    B, variablesB, cNB, B_pseudo_inv, LD, esEstandar = acomodarRestricciones(variablesNB)
+    print(variablesB, variablesNB)
+    print(cB,cNB)
+    print(B)
+    print(B_pseudo_inv)
+    print(LD)

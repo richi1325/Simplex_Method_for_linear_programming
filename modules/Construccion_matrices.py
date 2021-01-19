@@ -12,7 +12,7 @@ def funcionObjetivo():
         
     z = input('Inserta la función objetivo:')
     z = re.sub(r'\s+','',z)
-    variablesB = re.findall(r'[0-9]*\.*[0-9]*([a-zA-Z]+[0-9]*)',z)
+    variablesNB = re.findall(r'[0-9]*\.*[0-9]*([a-zA-Z]+[0-9]*)',z)
     cB =  re.findall(r'(-*[0-9]*\.*[0-9]*)[a-zA-Z]+[0-9]*',z)
     for i in range(len(cB)):
         if cB[i]=='-':
@@ -21,17 +21,17 @@ def funcionObjetivo():
             cB[i]=(-1)*tipo_simplex*float(cB[i])
         else:
             cB[i]=(-1)*tipo_simplex*1.0
-    return np.array(variablesB), np.array(cB)
+    return variablesNB, np.array(cB)
 
 
-def construirB(numero_restricciones_estandar,B_aux):
+def construirB(restricciones,numero_restricciones_estandar,B_aux,variablesNB):
     B = list()
     for i in range(numero_restricciones_estandar):
-        B.append([0.0 for _ in range(len(variablesB))])    
+        B.append([0.0 for _ in range(len(variablesNB))])    
 
     for i in range(numero_restricciones_estandar):
-        if len(B_aux[i])==len(variablesB) and re.findall(r'-*[0-9]*\.*[0-9]*([a-zA-Z]+[0-9]*)',restricciones[i]) == variablesB:
-            for j in range(len(variablesB)):
+        if len(B_aux[i])==len(variablesNB) and re.findall(r'-*[0-9]*\.*[0-9]*([a-zA-Z]+[0-9]*)',restricciones[i]) == variablesNB:
+            for j in range(len(variablesNB)):
                 if re.search(r'-+[a-zA-Z]+',B_aux[i][j]):
                     B[i][j]=-1.0
                 elif re.search(r'^-*[0-9]+',B_aux[i][j]):
@@ -42,11 +42,11 @@ def construirB(numero_restricciones_estandar,B_aux):
         else:
             posicion_variables=0
             posicion_B=0
-            for j in range(len(variablesB)):
+            for j in range(len(variablesNB)):
                 if posicion_B>=len(B[i])-1:
                     posicion_B-=1
                 x=re.search(r'[a-zA-Z]+[0-9]*$',B_aux[i][posicion_B])
-                if variablesB[posicion_variables]!=B_aux[i][posicion_B][x.start():x.end()]:
+                if variablesNB[posicion_variables]!=B_aux[i][posicion_B][x.start():x.end()]:
                     B[i][j]=0.0
                     posicion_variables+=1
                 else:
@@ -76,11 +76,11 @@ def pseudoInvB(signoVariableNB):
         B_Pseudo_Inv.append(aux)
     return B_Pseudo_Inv
 
-def restricciones():
+def acomodarRestricciones(variablesNB):
     numero_restricciones = int(input('¿Cuántas restricciones contiene tu problema?:'))
     restricciones = list()
     esEstandar=True
-    variablesNB=list()
+    variablesB=list()
     B_aux=list()
     signoVariableNB=list()
     j=1
@@ -88,14 +88,14 @@ def restricciones():
     numero_restricciones_estandar=numero_restricciones
     LD=list()
     for i in range(numero_restricciones):
-        while('s'+str(j) in variablesB):
+        while('s'+str(j) in variablesNB):
             j+=1
         restricciones.append(re.sub(r'\s+','',input(f'Inserte la restriccion #{i+1}:')))
         B_aux.append(re.findall(r'-*[0-9]*\.*[0-9]*[a-zA-Z]+[0-9]*',restricciones[restricciones_indice]))
         LD.append([float(re.findall(r'[0-9]+$',restricciones[restricciones_indice])[0])])
         if re.search(r'[a-zA-Z]+[0-9]*=[0-9]+$',restricciones[restricciones_indice]):
             esEstandar=False
-            variablesNB.append('s'+str(j))
+            variablesB.append('s'+str(j))
             signoVariableNB.append(-1.0)
             B_aux.append(re.findall(r'-*[0-9]*\.*[0-9]*[a-zA-Z]+[0-9]*',restricciones[restricciones_indice]))
             LD.append([float(re.findall(r'[0-9]+$',restricciones[restricciones_indice])[0])])
@@ -106,16 +106,16 @@ def restricciones():
         elif re.search(r'>=',restricciones[restricciones_indice]):
             esEstandar=False
             signoVariableNB.append(-1.0)
-        variablesNB.append('s'+str(j))
-        if len(variablesNB)-1==len(signoVariableNB):
+        variablesB.append('s'+str(j))
+        if len(variablesB)-1==len(signoVariableNB):
             signoVariableNB.append(1.0)
         j+=1
         restricciones_indice+=1
 
-    B = construirB(numero_restricciones_estandar,B_aux)
+    B = construirB(restricciones,numero_restricciones_estandar,B_aux,variablesNB)
     
     B_pseudo_inv = pseudoInvB(signoVariableNB)
 
-    cNB= [0.0 for _ in variablesNB]
+    cNB= [0.0 for _ in variablesB]
     
-    return np.array(B), variablesNB, np.array(cNB), np.array(B_pseudo_inv), np.array(LD), esEstandar
+    return np.array(B), variablesB, np.array(cNB), np.array(B_pseudo_inv), np.array(LD), esEstandar
