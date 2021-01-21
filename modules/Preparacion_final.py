@@ -2,6 +2,7 @@ import numpy as np
 
 def construirTableau(cB, cNB, A, B, esEstandar, ultimo_negativo,variablesB, variablesNB):
     if esEstandar:
+        A = np.concatenate((A,B),axis=1)
         C = np.concatenate((cNB,cB),axis=0).reshape(1,len(cB)+len(cNB))[0]
         B_inv = np.linalg.inv(B)
         variablesGenerales = variablesNB + variablesB
@@ -38,10 +39,12 @@ def construirTableau(cB, cNB, A, B, esEstandar, ultimo_negativo,variablesB, vari
         #cB
         cB[ultimo_negativo] = big_M
 
+        A = np.concatenate((A,B_tableau),axis=1)
+
         #B
         B[:,ultimo_negativo] = np.array(B_artificial).reshape(1,len(B_artificial)) 
 
         C = np.concatenate((cNB,cB_tableau),axis=0).reshape(1,len(cB_tableau)+len(cNB))[0]
         B_inv = np.linalg.inv(B)
 
-    return C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion
+    return A, C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion

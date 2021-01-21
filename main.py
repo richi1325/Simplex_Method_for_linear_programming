@@ -11,7 +11,7 @@ if __name__ == "__main__":
     saludo()
     tipo_simplex, variablesNB, cNB = funcionObjetivo()
     A, variablesB, cB, B, LD, esEstandar, ultimo_negativo= acomodarRestricciones(variablesNB)
-    C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion = construirTableau(cB,cNB,A,B,esEstandar,ultimo_negativo,variablesB, variablesNB)
+    A, C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion = construirTableau(cB,cNB,A,B,esEstandar,ultimo_negativo,variablesB, variablesNB)
 
     Z_valor = 0
     
@@ -31,4 +31,4 @@ if __name__ == "__main__":
     #B
     print(LD)   
     
-    simplex(filas, columnas, A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ubicacion)
+    simplexMatricial(filas, columnas, A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ubicacion)
