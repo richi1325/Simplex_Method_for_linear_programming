@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 def construirTableau(cB, cNB, A, B, esEstandar, ultimo_negativo,variablesB, variablesNB):
     if esEstandar:
@@ -40,7 +39,6 @@ def construirTableau(cB, cNB, A, B, esEstandar, ultimo_negativo,variablesB, vari
         C = np.concatenate((cNB,cB_tableau),axis=0).reshape(1,len(cB_tableau)+len(cNB))
         A = np.concatenate((A,B_tableau),axis=1)
         tableau = np.concatenate((C,A),axis=0)
-        tableau = pd.DataFrame(tableau,columns=variables_tableau)
         B_inv = np.linalg.inv(B)
 
     return tableau, variablesB, variablesNB, cB, B_inv
