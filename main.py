@@ -1,7 +1,7 @@
 from modules.Construccion_matrices import funcionObjetivo, acomodarRestricciones
 from modules.portada import saludo
 from modules.Preparacion_final import construirTableau
-from modules.testeo import simplex
+from modules.simplex import simplexMatricial
 
 
 import numpy as np

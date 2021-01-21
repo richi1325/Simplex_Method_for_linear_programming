@@ -34,7 +34,7 @@ def tiene_negativos(vector):
 
 #Ahora se crea la matriz de simplex revisado MR (matriz reducida)
 
-def simplex(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, C, No_basicas_ubicacion, Basicas_ubicacion):
+def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, C, No_basicas_ubicacion, Basicas_ubicacion):
 
 	#crear vector de variables no basicas VNB,el vector Y_ai y el vector br_yj
 
