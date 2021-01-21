@@ -21,7 +21,7 @@ def funcionObjetivo():
             cNB[i]=(-1)*tipo_simplex*float(cNB[i])
         else:
             cNB[i]=(-1)*tipo_simplex*1.0
-    return tipo_simplex, variablesNB, np.array(cNB).reshape(1,len(cNB))[0]
+    return tipo_simplex, variablesNB, np.array(cNB)
 
 
 def construirA(restricciones,numero_restricciones_estandar,A_aux,variablesNB):
@@ -69,17 +69,20 @@ def construirA(restricciones,numero_restricciones_estandar,A_aux,variablesNB):
 
 def construirB(signoVariableNB):
     B=list()
+    ultimo_negativo=False
     posicion=0
     for i in range(len(signoVariableNB)):
         aux=list()
         for j in range(len(signoVariableNB)):
             if posicion==j:
+                if signoVariableNB[i]<0:
+                    ultimo_negativo=posicion
                 aux.append(signoVariableNB[i])
             else:
                 aux.append(0.0)
         posicion+=1
         B.append(aux)
-    return B
+    return B, ultimo_negativo
 
 def acomodarRestricciones(variablesNB):
     numero_restricciones = int(input('¿Cuántas restricciones contiene tu problema?:'))
@@ -119,12 +122,12 @@ def acomodarRestricciones(variablesNB):
 
     A = construirA(restricciones,numero_restricciones_estandar,A_aux,variablesNB)
     
-    B = construirB(signoVariableNB)
+    B, ultimo_negativo = construirB(signoVariableNB)
 
     cB = [0.0 for _ in variablesB]
     
     A = np.array(A).reshape(numero_restricciones_estandar,len(variablesNB))
-    cB = np.array(cB).reshape(1,len(cB))[0]
-    B = np.array(B).reshape(len(variablesB),len(variablesB))
+    cB = np.array(cB)
+    B = np.array(B)
     LD = np.array(LD).reshape(len(LD),1)
-    return A, variablesB, cB, B, LD, esEstandar
+    return A, variablesB, cB, B, LD, esEstandar, ultimo_negativo
