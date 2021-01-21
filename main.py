@@ -10,7 +10,7 @@ import pandas as pd
 if __name__ == "__main__":
     saludo()
     tipo_simplex, variablesNB, cNB = funcionObjetivo()
-    A, variablesB, cB, B, LD, esEstandar, ultimo_negativo= acomodarRestricciones(variablesNB)
+    A, variablesB, cB, B, LD, esEstandar, ultimo_negativo = acomodarRestricciones(variablesNB)
     A, C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion = construirTableau(cB,cNB,A,B,esEstandar,ultimo_negativo,variablesB, variablesNB)
 
     Z_valor = 0

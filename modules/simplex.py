@@ -117,6 +117,7 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 
 	#El resultado se obtiene del vector Basicas_ubicacion y B
 	#Basicas ubicacion tiene el numero de columna correspondiente a cada variable
+	print(MR,B)
 	if(mensaje==1):
 		print("Metodo simplex resuelto de manera exitosa")
 	else:

@@ -85,7 +85,15 @@ def construirB(signoVariableNB):
     return B, ultimo_negativo
 
 def acomodarRestricciones(variablesNB):
-    numero_restricciones = int(input('¿Cuántas restricciones contiene tu problema?:'))
+    while(True):
+        try:
+            numero_restricciones = int(input('¿Cuántas restricciones contiene tu problema?:'))
+            if numero_restricciones>0:
+                break
+            else:
+                print('La cantidad no puede ser negativa o 0, intentalo de nuevo')
+        except:
+            print('¡Inserte una cantidad válida!')
     restricciones = list()
     esEstandar=True
     variablesB=list()
