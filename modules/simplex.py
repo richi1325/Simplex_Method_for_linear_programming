@@ -36,39 +36,35 @@ def tiene_negativos(vector):
 
 def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, C, No_basicas_ubicacion, Basicas_ubicacion):
 
+	B=np.matmul(MR,B)
+	tableau_restricciones= matriz_restricciones
 	#crear vector de variables no basicas VNB,el vector Y_ai y el vector br_yj
-
 	VNB=np.zeros(columnas-filas)
-
-	Y_ai=np.zeros(filas-1)
+	Y_ai=np.zeros(filas)
 	Y_ai_max=0 #espacio para el elemento maximo del vector VNB
 	ubicacion_maximo_VNB=0#espacio para la ubicacion del elemento maximo en VNB
-	br_yj=np.zeros(filas-1)
+	br_yj=np.zeros(filas)
 	ubicacion_minimo_br_yj=0
-
 	#Comienza el ciclo
 	#Valor_funcion_max es para evitar ciclos en soluciones degeneradas: se verifica que exista una mejora en la solucion
 	mensaje=0
 	valor_funcion_objetivo_max=0
-	contador=0
 	#Se procede a calcular Y_ai
 	while(True):
 		
-		llenar_vector_no_basicas(VNB,matriz_restricciones,C,No_basicas_ubicacion,ZR,filas,columnas)
+		llenar_vector_no_basicas(VNB,tableau_restricciones,C,No_basicas_ubicacion,ZR,filas,columnas)
 		Y_ai_max=np.max(VNB)
 		if(Y_ai_max<=0):
 			mensaje=1
 			if(tiene_negativos(B)):
 				mensaje=3
 			break
+
 		ubicacion_maximo_VNB=int(encontrar_maximo_indice(VNB))
-		Y_ai=np.matmul(MR,matriz_restricciones[:,int(No_basicas_ubicacion[ubicacion_maximo_VNB])])
-		
-		if(contador>4):
-			break
-		contador+=1
+		Y_ai=np.matmul(MR,tableau_restricciones[:,int(No_basicas_ubicacion[ubicacion_maximo_VNB])])
+
 		#Se calcula br_yj
-		for i in range(filas-1):
+		for i in range(filas):
 			if(Y_ai[i]==0):
 				br_yj[i]=-1
 			else:
@@ -80,23 +76,22 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 
 		#se cambia la matriz MR
 		ubicacion_minimo_br_yj=int(encontrar_minimo_positivo_indice(br_yj))
-		print(ubicacion_minimo_br_yj)
 		if(Y_ai[ubicacion_minimo_br_yj]==0):
 			break
-		for i in range(filas-1):
+		for i in range(filas):
 			MR[ubicacion_minimo_br_yj][i]=MR[ubicacion_minimo_br_yj][i]/Y_ai[ubicacion_minimo_br_yj]
 
-		for i in range(filas-1):
-			for j in range(filas-1):
+		for i in range(filas):
+			for j in range(filas):
 				if(i!=ubicacion_minimo_br_yj):
 					MR[i][j]=MR[i][j]-MR[ubicacion_minimo_br_yj][j]*Y_ai[i]
 		
 		
-		for i in range(filas-1):
+		for i in range(filas):
 			ZR[i]=ZR[i]-MR[ubicacion_minimo_br_yj][i]*Y_ai_max
 
 		B[ubicacion_minimo_br_yj]=B[ubicacion_minimo_br_yj]/Y_ai[ubicacion_minimo_br_yj]
-		for i in range(filas-1):
+		for i in range(filas):
 			if (i!=ubicacion_minimo_br_yj):
 				B[i]=B[i]-B[ubicacion_minimo_br_yj]*Y_ai[i]
 
@@ -121,9 +116,10 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 		print("Metodo simplex resuelto de manera exitosa")
 	else:
 		if(mensaje==2):
-			print("Metodo simplex terminado, posibles soluciones degeneradas")
+			print("Metodo simplex terminado, posibles soluciones degeneradas. Se muestran resultados")
 		else:
 			if(mensaje==3):
 				print("Metodo simplex terminado, solucion no factible")
 			else:
 				print("Metodo simplex terminado, solucion no acotada")
+	return Basicas_ubicacion,No_basicas_ubicacion,B, VNB,mensaje
