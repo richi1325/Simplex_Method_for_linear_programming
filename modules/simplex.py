@@ -18,16 +18,11 @@ def encontrar_minimo_positivo_indice(vector):
 	min=vector[0]
 	indice=0
 	for i in range(np.size(vector)):
-		if vector[i]<min and vector[i]>=0 or min<0:
+		if vector[i]<min and vector[i]>=0:
 			indice=i
 			min=vector[i]
 	return indice
 
-def tiene_negativos(vector):
-	for i in range(np.size(vector)):
-		if (vector[i]<0):
-			return True
-	return False
 #ingreso de datos,solo para prueba
 
 #Se ha llenado el tableu con todos los datos
@@ -49,32 +44,34 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 	#Comienza el ciclo
 	#Valor_funcion_max es para evitar ciclos en soluciones degeneradas: se verifica que exista una mejora en la solucion
 	mensaje=0
-	valor_funcion_objetivo_max=0
 	z_valor = np.dot(ZR,B)
 	B = np.dot(MR,B)
+	iteracion=-1
 	#Se procede a calcular Y_ai
 	while(True):
-		VNB = llenar_vector_no_basicas(VNB,tableau_restricciones,C,No_basicas_ubicacion,ZR,filas,columnas)
-		Y_ai_max=np.max(VNB)
-		if(Y_ai_max<=0):
-			mensaje=1
-			if(tiene_negativos(B)):
-				mensaje=3
+		iteracion+=1
+		if iteracion==11:
 			break
+		print('-----testeo------')
+		print(B)
+		VNB = llenar_vector_no_basicas(VNB,tableau_restricciones,C,No_basicas_ubicacion,ZR,filas,columnas)
+		print(VNB)
+		Y_ai_max=np.max(VNB)
 
 		ubicacion_maximo_VNB=int(encontrar_maximo_indice(VNB))
-		Y_ai=np.matmul(MR,tableau_restricciones[:,int(No_basicas_ubicacion[ubicacion_maximo_VNB])])
 
+		Y_ai=np.matmul(MR,tableau_restricciones[:,int(No_basicas_ubicacion[ubicacion_maximo_VNB])])
+		print(Y_ai)
 		#Se calcula br_yj
 		for i in range(filas):
-			if(Y_ai[i]==0):
-				br_yj[i]=-1
+			if(Y_ai[i]<=0):
+				br_yj[i]=-10000000
 			else:
 				br_yj[i]=B[i]/Y_ai[i]
 
-		if(np.max(br_yj)<0):
-			mensaje=4
-			break
+		#if(np.max(br_yj)<0):
+		#	mensaje=4
+		#	break
 
 		#se cambia la matriz MR
 		ubicacion_minimo_br_yj=int(encontrar_minimo_positivo_indice(br_yj))
@@ -102,6 +99,13 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 
 	
 		if(np.max(Y_ai)<=0):
+			mensaje=1
+			if (tiene_negativos(B) and Y_ai_max<0):
+				mensaje=3
+			else:
+				if(Y_ai_max==0):
+					mensaje=2
+			break
 			mensaje=2
 			break
 		
@@ -124,3 +128,66 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 			else:
 				mensaje = "Metodo simplex terminado, solucion no acotada"
 	return Basicas_ubicacion,No_basicas_ubicacion,B, VNB, mensaje, z_valor
+
+def obtenerIndiceMinimo(br_yj,y_i):
+	min=10000
+	indice=0
+	for i in range(np.size(br_yj)):
+		if br_yj[i]<min and y_i[i]>=0:
+			indice=i
+			min=br_yj[i]
+	return indice
+
+def tiene_negativos(vector):
+	for i in range(np.size(vector)):
+		if (vector[i]<0):
+			return True
+	return False
+
+def simplexTesteo(A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ubicacion):
+	mensaje=''
+	z_valor = np.dot(cB,LD)
+	LD = np.dot(B_inv,LD)
+	iteraciones=0
+	while(True):
+		VNB_valor = list()
+		for i in No_basicas_ubicacion:
+			VNB_valor.append(np.dot(cB,A[:,i])-C[i])
+		VNB_valor_max = max(VNB_valor)
+
+		if round(VNB_valor_max,4)<=0.0:
+			mensaje="Metodo simplex resuelto de manera exitosa"
+			if VNB_valor_max == 0:
+				mensaje="Metodo simplex resuelto de manera exitosa, solución degenerada"
+			elif tiene_negativos(LD):
+				mensaje = "Metodo simplex terminado, solucion no factible"
+			break
+
+		indice_VNB_valor = VNB_valor.index(VNB_valor_max)
+		y_i = np.dot(B_inv,A[:,No_basicas_ubicacion[indice_VNB_valor]]).reshape(1,len(A))[0]
+
+		br_yj = list()
+		for i in range(len(LD)):
+			if round(y_i[i],4)>0.0:
+				br_yj.append(LD[i][0]/y_i[i])
+			else:
+				br_yj.append(10000)
+		br_yj = np.array(br_yj)
+
+		indice_min_br_yj = obtenerIndiceMinimo(br_yj,y_i)
+
+		B_inv[indice_min_br_yj,:] = B_inv[indice_min_br_yj,:]/y_i[indice_min_br_yj]
+		LD[indice_min_br_yj][0] = LD[indice_min_br_yj][0]/y_i[indice_min_br_yj]
+
+		for i in [i for i in range(len(y_i)) if i!=indice_min_br_yj]:
+			B_inv[i,:] = B_inv[i,:] - B_inv[indice_min_br_yj,:]*y_i[i]
+			LD[i][0] = LD[i][0]-LD[indice_min_br_yj][0]*y_i[i]
+		cB = cB-B_inv[indice_min_br_yj]*VNB_valor_max
+		z_valor = z_valor-LD[indice_min_br_yj][0]*VNB_valor_max
+
+		auxiliar_var = No_basicas_ubicacion[indice_VNB_valor]
+		No_basicas_ubicacion[indice_VNB_valor] = Basicas_ubicacion[indice_min_br_yj]
+		Basicas_ubicacion[indice_min_br_yj] = auxiliar_var 
+
+		iteraciones+=1
+	return Basicas_ubicacion,No_basicas_ubicacion,VNB_valor, mensaje, z_valor, LD,iteraciones

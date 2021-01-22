@@ -16,11 +16,11 @@ def funcionObjetivo():
     cNB =  re.findall(r'(-*[0-9]*\.*[0-9]*)[a-zA-Z]+[0-9]*',z)
     for i in range(len(cNB)):
         if cNB[i]=='-':
-            cNB[i]=(-1)*tipo_simplex*-1.0
+            cNB[i]=(-1)**tipo_simplex*-1.0
         elif cNB[i]!='':
-            cNB[i]=(-1)*tipo_simplex*float(cNB[i])
+            cNB[i]=(-1)**tipo_simplex*float(cNB[i])
         else:
-            cNB[i]=(-1)*tipo_simplex*1.0
+            cNB[i]=(-1)**tipo_simplex*1.0
     return tipo_simplex, variablesNB, np.array(cNB)
 
 
