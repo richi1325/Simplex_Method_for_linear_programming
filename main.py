@@ -12,23 +12,14 @@ if __name__ == "__main__":
     tipo_simplex, variablesNB, cNB = funcionObjetivo()
     A, variablesB, cB, B, LD, esEstandar, ultimo_negativo = acomodarRestricciones(variablesNB)
     A, C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion = construirTableau(cB,cNB,A,B,esEstandar,ultimo_negativo,variablesB, variablesNB)
-
-    Z_valor = 0
-    
-    #C
-    print(C)
-    #Matriz restricciones
-    print(A)
     filas = len(A)
     columnas = C.size
-    #Todas las variables
-    print(variablesGenerales)
-    print(Basicas_ubicacion, No_basicas_ubicacion)
-    #ZR
-    print(cB)
-    #MR
-    print(B_inv)
-    #B
-    print(LD)   
-    
-    simplexMatricial(filas, columnas, A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ubicacion)
+    Z_valor = 0
+    Basicas_ubicacion,No_basicas_ubicacion,B, VNB,mensaje, Z_valor = simplexMatricial(filas, columnas, A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ubicacion)
+    variablesB = list(map(lambda x: variablesGenerales[x],Basicas_ubicacion))
+    variablesNB = list(map(lambda x: variablesGenerales[x],No_basicas_ubicacion))
+    valoresResultado = list(map(lambda x,y: str(x)+'='+str(float(y[0])),variablesB,B))
+    for i in valoresResultado:
+        print(i)
+    print('Z='+str(float(-1.0*Z_valor[0])))
+    print(mensaje)

@@ -3,6 +3,7 @@ import numpy as np
 def llenar_vector_no_basicas(no_basicas,matriz_restricciones,coeficientes,ubicacion_coeficientes,ZR,filas,columnas):
 	for x in range(columnas-filas):
 		no_basicas[x]=np.matmul(ZR,	matriz_restricciones[:,[int(ubicacion_coeficientes[x])]])-coeficientes[int(ubicacion_coeficientes[x])]
+	return no_basicas
 
 def encontrar_maximo_indice(vector):
 	max=vector[0]
@@ -36,7 +37,7 @@ def tiene_negativos(vector):
 
 def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, C, No_basicas_ubicacion, Basicas_ubicacion):
 
-
+	#B=np.matmul(MR,B)
 	tableau_restricciones= matriz_restricciones
 	#crear vector de variables no basicas VNB,el vector Y_ai y el vector br_yj
 	VNB=np.zeros(columnas-filas)
@@ -49,14 +50,12 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 	#Valor_funcion_max es para evitar ciclos en soluciones degeneradas: se verifica que exista una mejora en la solucion
 	mensaje=0
 	valor_funcion_objetivo_max=0
-	print(matriz_restricciones)
+	z_valor = np.dot(ZR,B)
+	B = np.dot(MR,B)
 	#Se procede a calcular Y_ai
 	while(True):
-		
-		print("Iteracion")
-		llenar_vector_no_basicas(VNB,tableau_restricciones,C,No_basicas_ubicacion,ZR,filas,columnas)
+		VNB = llenar_vector_no_basicas(VNB,tableau_restricciones,C,No_basicas_ubicacion,ZR,filas,columnas)
 		Y_ai_max=np.max(VNB)
-		print(VNB)
 		if(Y_ai_max<=0):
 			mensaje=1
 			if(tiene_negativos(B)):
@@ -65,8 +64,6 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 
 		ubicacion_maximo_VNB=int(encontrar_maximo_indice(VNB))
 		Y_ai=np.matmul(MR,tableau_restricciones[:,int(No_basicas_ubicacion[ubicacion_maximo_VNB])])
-		print("Y_ai")
-		print(Y_ai)
 
 		#Se calcula br_yj
 		for i in range(filas):
@@ -81,7 +78,6 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 
 		#se cambia la matriz MR
 		ubicacion_minimo_br_yj=int(encontrar_minimo_positivo_indice(br_yj))
-
 		if(Y_ai[ubicacion_minimo_br_yj]==0):
 			break
 		for i in range(filas):
@@ -102,36 +98,29 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 				B[i]=B[i]-B[ubicacion_minimo_br_yj]*Y_ai[i]
 
 		z_valor=z_valor-B[ubicacion_minimo_br_yj]*Y_ai_max
-
 		#medida para evitar soluciones degeneradas
-		if(z_valor<0):
-			if(z_valor<valor_funcion_objetivo_max):
-				valor_funcion_objetivo_max=z_valor
-			else:
-				if(valor_funcion_objetivo_max==z_valor):
-					mensaje=2
-					break
+
+	
+		if(np.max(Y_ai)<=0):
+			mensaje=2
+			break
+		
 		#se hace el cambio de la variable no basica a basica
 		aux=No_basicas_ubicacion[ubicacion_maximo_VNB]
 		No_basicas_ubicacion[ubicacion_maximo_VNB]=Basicas_ubicacion[ubicacion_minimo_br_yj]
 		Basicas_ubicacion[ubicacion_minimo_br_yj]=aux
-		print("Basicas")
-		print(Basicas_ubicacion)
-		print("MR")
-		print(MR)
+		
+
 	#El resultado se obtiene del vector Basicas_ubicacion y B
 	#Basicas ubicacion tiene el numero de columna correspondiente a cada variable
 	if(mensaje==1):
-		print("Metodo simplex resuelto de manera exitosa")
-		for i in range(filas):
-			print()
-		print(MR)
-		print(B)
+		mensaje="Metodo simplex resuelto de manera exitosa"
 	else:
 		if(mensaje==2):
-			print("Metodo simplex terminado, posibles soluciones degeneradas")
+			mensaje = "Metodo simplex terminado, posibles soluciones degeneradas. Se muestran resultados"
 		else:
 			if(mensaje==3):
-				print("Metodo simplex terminado, solucion no factible")
+				mensaje = "Metodo simplex terminado, solucion no factible"
 			else:
-				print("Metodo simplex terminado, solucion no acotada")
+				mensaje = "Metodo simplex terminado, solucion no acotada"
+	return Basicas_ubicacion,No_basicas_ubicacion,B, VNB, mensaje, z_valor
