@@ -4,7 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "==1.2.0"
 numpy = "==1.19.5"
 pyinstaller = "==4.2"
 

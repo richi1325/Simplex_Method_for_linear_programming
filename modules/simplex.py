@@ -130,7 +130,7 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 	return Basicas_ubicacion,No_basicas_ubicacion,B, VNB, mensaje, z_valor
 
 def obtenerIndiceMinimo(br_yj,y_i):
-	min=10000
+	min=np.inf
 	indice=0
 	for i in range(np.size(br_yj)):
 		if br_yj[i]<min and y_i[i]>=0:
@@ -138,18 +138,23 @@ def obtenerIndiceMinimo(br_yj,y_i):
 			min=br_yj[i]
 	return indice
 
-def tiene_negativos(vector):
-	for i in range(np.size(vector)):
-		if (vector[i]<0):
-			return True
-	return False
+def tiene_negativos(LD):
+	pos=False
+	for i in range(len(LD)):
+		if (LD[i][0]<0.0):
+			pos=True
+	return pos
 
-def simplexTesteo(A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ubicacion):
+def simplexTesteo(A, B_inv, cB, LD, C, No_basicas_ubicacion, Basicas_ubicacion, esEstandar):
 	mensaje=''
 	z_valor = np.dot(cB,LD)
 	LD = np.dot(B_inv,LD)
 	iteraciones=0
-	while(True):
+	if not esEstandar:
+		variable_artificial = max(Basicas_ubicacion)
+	else:
+		variable_artificial = None 
+	while True:
 		VNB_valor = list()
 		for i in No_basicas_ubicacion:
 			VNB_valor.append(np.dot(cB,A[:,i])-C[i])
@@ -157,21 +162,29 @@ def simplexTesteo(A, B_inv, cB, LD, Z_valor, C, No_basicas_ubicacion, Basicas_ub
 
 		if round(VNB_valor_max,4)<=0.0:
 			mensaje="Metodo simplex resuelto de manera exitosa"
-			if VNB_valor_max == 0:
+			if round(VNB_valor_max,4)==0.0:
 				mensaje="Metodo simplex resuelto de manera exitosa, solución degenerada"
-			elif tiene_negativos(LD):
-				mensaje = "Metodo simplex terminado, solucion no factible"
+			elif variable_artificial is not None:
+				if variable_artificial in Basicas_ubicacion or tiene_negativos(LD):
+					mensaje = "Metodo simplex terminado, solucion infactible"
 			break
 
 		indice_VNB_valor = VNB_valor.index(VNB_valor_max)
+
 		y_i = np.dot(B_inv,A[:,No_basicas_ubicacion[indice_VNB_valor]]).reshape(1,len(A))[0]
 
+		noAcotado = list(filter(lambda x: round(x,4)>=0.0,y_i))
+		if not noAcotado:
+			mensaje = "Metodo simplex terminado, solucion no acotada"
+			break
+
 		br_yj = list()
+
 		for i in range(len(LD)):
 			if round(y_i[i],4)>0.0:
 				br_yj.append(LD[i][0]/y_i[i])
 			else:
-				br_yj.append(10000)
+				br_yj.append(np.inf)
 		br_yj = np.array(br_yj)
 
 		indice_min_br_yj = obtenerIndiceMinimo(br_yj,y_i)
