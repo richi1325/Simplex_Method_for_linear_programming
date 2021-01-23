@@ -65,7 +65,7 @@ def simplexMatricial(filas, columnas, matriz_restricciones, MR, ZR, B, z_valor, 
 		#Se calcula br_yj
 		for i in range(filas):
 			if(Y_ai[i]<=0):
-				br_yj[i]=-10000000
+				br_yj[i]=-1
 			else:
 				br_yj[i]=B[i]/Y_ai[i]
 
