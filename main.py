@@ -5,6 +5,8 @@ from modules.simplex import simplexMatricial, simplexTesteo
 
 
 import numpy as np
+
+
 import os
 
 if __name__ == "__main__":
@@ -16,6 +18,7 @@ if __name__ == "__main__":
         if len(variablesNB)==2:
             pass
             ##metodo grafico
+
             #cNB
             #A
             #LD
