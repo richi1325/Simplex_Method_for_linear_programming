@@ -174,6 +174,7 @@ def simplexTesteo(A, B_inv, cB, LD, C, No_basicas_ubicacion, Basicas_ubicacion, 
 		y_i = np.dot(B_inv,A[:,No_basicas_ubicacion[indice_VNB_valor]]).reshape(1,len(A))[0]
 
 		noAcotado = list(filter(lambda x: round(x,4)>=0.0,y_i))
+		
 		if not noAcotado:
 			mensaje = "Metodo simplex terminado, solucion no acotada"
 			break
