@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 numpy = "==1.19.5"
 pyinstaller = "==4.2"
+sympy = "==1.7.1"
 
 [dev-packages]
 

@@ -2,6 +2,7 @@ from modules.Construccion_matrices import funcionObjetivo, acomodarRestricciones
 from modules.portada import saludo
 from modules.Preparacion_final import construirTableau
 from modules.simplex import simplexRevisado
+
 from modules.graphic import restriccionesGrafico,intersectarRestricciones
 
 import sympy
