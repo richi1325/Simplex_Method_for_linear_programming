@@ -114,13 +114,13 @@ def acomodarRestricciones(variablesNB):
             j+=1
         restricciones.append(re.sub(r'\s+','',input(f'Inserte la restriccion #{i+1}:')))
         A_aux.append(re.findall(r'-*[0-9]*\.*[0-9]*[a-zA-Z]+[0-9]*',restricciones[restricciones_indice]))
-        LD.append([float(re.findall(r'[0-9]+$',restricciones[restricciones_indice])[0])])
+        LD.append([float(re.findall(r'-*[0-9]+\.*[0-9]*$',restricciones[restricciones_indice])[0])])
         if re.search(r'[a-zA-Z]+[0-9]*=[0-9]+$',restricciones[restricciones_indice]):
             esEstandar=False
             variablesB.append('s'+str(j))
             signoVariableNB.append(-1.0)
             A_aux.append(re.findall(r'-*[0-9]*\.*[0-9]*[a-zA-Z]+[0-9]*',restricciones[restricciones_indice]))
-            LD.append([float(re.findall(r'[0-9]+$',restricciones[restricciones_indice])[0])])
+            LD.append([float(re.findall(r'-*[0-9]+\.*[0-9]*$',restricciones[restricciones_indice])[0])])
             numero_restricciones_estandar+=1
             restricciones.append(restricciones[restricciones_indice])
             restricciones_indice+=1
