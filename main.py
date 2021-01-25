@@ -10,7 +10,11 @@ import os
 if __name__ == "__main__":
     respuesta = 'S' 
     saludo()
+    it=0
     while(respuesta.upper()=='S'):
+        clear = lambda: os.system('cls')
+        if it==1:
+            clear()
         tipo_simplex, variablesNB, cNB, z, esGrafico = funcionObjetivo()
         #if esGrafico:
         #    z, restricciones,LD,Op = restriccionesGrafico(z,variablesNB)
@@ -25,7 +29,6 @@ if __name__ == "__main__":
         valoresResultadoB = list(map(lambda x,y: '\t\t'+str(x)+' = '+str(float(y[0])),variablesB,LD))
         valoresResultadoNB = list(map(lambda x: '\t\t'+str(x)+' = '+'0',variablesNB))    
         
-        clear = lambda: os.system('cls')
         clear()
             
         print('\n\n\t VALOR DE LA FUNCIÓN OBJETIVO:')
@@ -49,3 +52,4 @@ if __name__ == "__main__":
                     print('\n\tSerá todo un placer volver a ayudarte!')
                     input('\t')
                 break
+        it=1
