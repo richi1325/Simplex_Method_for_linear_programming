@@ -1,7 +1,4 @@
 import re
-import sympy
-from sympy import sympify
-from sympy import symbols
 
 def restriccionesGrafico(z,variablesNB):
     while(True):
