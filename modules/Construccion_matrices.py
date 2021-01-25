@@ -38,8 +38,8 @@ def construirA(restricciones,numero_restricciones_estandar,A_aux,variablesNB):
             for j in range(len(variablesNB)):
                 if re.search(r'-+[a-zA-Z]+',A_aux[i][j]):
                     A[i][j]=-1.0
-                elif re.search(r'^-*[0-9]+',A_aux[i][j]):
-                    x=re.search(r'^-*[0-9]+',A_aux[i][j])
+                elif re.search(r'^-*[0-9]+\.*[0-9]*',A_aux[i][j]):
+                    x=re.search(r'^-*[0-9]+\.*[0-9]*',A_aux[i][j])
                     A[i][j]=float(A_aux[i][j][x.start():x.end()])
                 else:
                     A[i][j]=1.0
