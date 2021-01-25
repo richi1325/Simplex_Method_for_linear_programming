@@ -11,6 +11,10 @@ def funcionObjetivo():
             print('¡Inserta una opción válida!')
         
     z = input('\nInserta la función objetivo:')
+    if len(re.findall(r'(-*[0-9]*\.*[0-9]*[a-zA-Z]+[0-9]*)',z))==2:
+        esGrafico=True
+    else:
+        esGrafico=False
     z = re.sub(r'\s+','',z)
     variablesNB = re.findall(r'[0-9]*\.*[0-9]*([a-zA-Z]+[0-9]*)',z)
     cNB =  re.findall(r'(-*[0-9]*\.*[0-9]*)[a-zA-Z]+[0-9]*',z)
@@ -21,7 +25,7 @@ def funcionObjetivo():
             cNB[i]=(-1)**tipo_simplex*float(cNB[i])
         else:
             cNB[i]=(-1)**tipo_simplex*1.0
-    return tipo_simplex, variablesNB, np.array(cNB)
+    return tipo_simplex, variablesNB, np.array(cNB), z, esGrafico
 
 
 def construirA(restricciones,numero_restricciones_estandar,A_aux,variablesNB):
@@ -86,13 +90,15 @@ def construirB(signoVariableNB):
 
 def acomodarRestricciones(variablesNB):
     while(True):
-        try:
-            numero_restricciones = int(input('¿Cuántas restricciones contiene tu problema?:'))
+        numero_restricciones = input('¿Cuántas restricciones contiene tu problema?:')
+        x = numero_restricciones.isdigit()
+        if x:
+            numero_restricciones = int(numero_restricciones)
             if numero_restricciones>0:
                 break
             else:
                 print('La cantidad no puede ser negativa o 0, intentalo de nuevo')
-        except:
+        else:
             print('¡Inserte una cantidad válida!')
     restricciones = list()
     esEstandar=True
