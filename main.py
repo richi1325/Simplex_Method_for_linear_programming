@@ -2,25 +2,32 @@ from modules.Construccion_matrices import funcionObjetivo, acomodarRestricciones
 from modules.portada import saludo
 from modules.Preparacion_final import construirTableau
 from modules.simplex import simplexMatricial, simplexTesteo
+from modules.graphic import restriccionesGrafico,intersectarRestricciones
 
-
+import sympy
+from sympy import sympify
+from sympy import symbols
 import numpy as np
+
+
 import os
 
 if __name__ == "__main__":
     respuesta = 'S' 
     saludo()
     while(respuesta.upper()=='S'):
-        tipo_simplex, variablesNB, cNB = funcionObjetivo()
-        A, variablesB, cB, B, LD, esEstandar, ultimo_negativo = acomodarRestricciones(variablesNB)
-        if len(variablesNB)==2:
-            pass
-            ##metodo grafico
-            #cNB
-            #A
-            #LD
-            #variablesNb
+        tipo_simplex, variablesNB, cNB, z, esGrafico = funcionObjetivo()
+        if esGrafico:
+            z, restricciones,LD,Op = restriccionesGrafico(z,variablesNB)
+            restriccionesFactibles=intersectarRestricciones(restricciones)
+            print(restriccionesFactibles)
+            print(LD)
+            print(Op)
+            print(z)
+            print(sympify(restricciones[0]))
+            print(restricciones)
         else:
+            A, variablesB, cB, B, LD, esEstandar, ultimo_negativo = acomodarRestricciones(variablesNB)
             A, C, variablesB, variablesNB, cB, B_inv, variablesGenerales, Basicas_ubicacion, No_basicas_ubicacion = construirTableau(cB,cNB,A,B,esEstandar,ultimo_negativo,variablesB, variablesNB)
             Basicas_ubicacion,No_basicas_ubicacion,VNB_valor, mensaje, z_valor, LD, iteraciones = simplexTesteo(A, B_inv, cB, LD, C, No_basicas_ubicacion, Basicas_ubicacion, esEstandar)
 
@@ -44,12 +51,12 @@ if __name__ == "__main__":
             print('\n\t'+mensaje,end='\n')
 
             print('\n\tNO. ITERACIONES = '+str(iteraciones))
-            while True:
-                respuesta = input('\n\t¿Deseas resolver otro problema?[S/N]:')
-                if respuesta.upper() not in ['S','N']:
-                    print('\t¡Inserta una opción correcta!')
-                else:
-                    if respuesta.upper() == 'N':
-                        print('\n\tSerá todo un placer volver a ayudarte!')
-                        input('\t')
-                    break
+        while True:
+            respuesta = input('\n\t¿Deseas resolver otro problema?[S/N]:')
+            if respuesta.upper() not in ['S','N']:
+                print('\t¡Inserta una opción correcta!')
+            else:
+                if respuesta.upper() == 'N':
+                    print('\n\tSerá todo un placer volver a ayudarte!')
+                    input('\t')
+                break
